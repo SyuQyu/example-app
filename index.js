@@ -1,13 +1,12 @@
+const http = require("http");
+const appData = require("./app");
+const server = http.createServer(appData);
 require('dotenv').config()
 
-const app = require('./src/app');
-const db = require('./connection/dbConnect');
+const { API_PORT } = process.env;
+const port = process.env.PORT || API_PORT;
 
-app.listen(Number(process.env.PORT || 5000), async () => {
-  try {
-    await db.connect();
-    console.log(`DB connected. listening on port ${process.env.PORT}`);
-  } catch (e) {
-    console.log(e);
-  }
-})
+// server listening 
+server.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});

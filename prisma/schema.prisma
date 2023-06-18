@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("URL_DEV")
+  relationMode = "prisma"
+}
+
+model User {
+  id           Int     @id @default(autoincrement())
+  email        String
+  name         String?
+  username     String  @unique
+  password     String
+  profileImage String?
+  userLevel    Int
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  authors       Author[]
+  borrowedBooks BorrowedBook[]
+  RefreshToken  RefreshToken[]
+}
+
+model RefreshToken {
+  id          Int      @id @default(autoincrement())
+  hashedToken String
+  userId      Int
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Author {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  books     Book[]
+
+  @@index([userId])
+}
+
+model Book {
+  id            Int      @id @default(autoincrement())
+  title         String
+  isFiction     Boolean
+  datePublished DateTime
+  publisher     String
+  author        Author   @relation(fields: [authorId], references: [id])
+  authorId      Int
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  borrowedBooks BorrowedBook[]
+
+  @@index([authorId])
+}
+
+model BorrowedBook {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  book   Book @relation(fields: [bookId], references: [id])
+  bookId Int
+
+  borrowTime DateTime  @default(now())
+  returnDate DateTime?
+  updatedAt  DateTime  @updatedAt
+
+  @@index([bookId])
+  @@index([userId])
+}
