@@ -1,11 +1,12 @@
 const { prisma } = require(".");
 
 // Create a new borrowed book
-async function createBorrowedBook(userId, bookId) {
+async function createBorrowedBook(userId, bookId, returnDate) {
     const borrowedBook = await prisma.borrowedBook.create({
         data: {
             userId,
             bookId,
+            returnDate
         },
     });
 

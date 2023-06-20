@@ -26,11 +26,20 @@ function isAuthenticated(req, res, next) {
 
 }
 
+async function checkUserLevelAdmin(req, res, next) {
+    const { userId } = req.payload;
+    const user = await findUserById(userId);
+    if (user.userLevel !== 3) {
+        return res.status(401).send({ message: 'You are not authorized to access this endpoint.' });
+    }
+    next();
+}
+
 async function checkUserLevel(req, res, next) {
     const { userId } = req.payload;
     const user = await findUserById(userId);
-    if (user.userLevel !== 2) {
-        return res.status(401).send({ message: 'You are not authorized to access this endpoint.' });
+    if (user.userLevel < 2) {
+        return res.status(401).send({ message: 'You are not authorized as guard to access this endpoint.', id: user.userLevel });
     }
     next();
 }
@@ -38,6 +47,8 @@ async function checkUserLevel(req, res, next) {
 
 module.exports = {
     isAuthenticated,
+    checkUserLevelAdmin,
     checkUserLevel
+
 
 }

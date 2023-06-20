@@ -4,7 +4,9 @@ const borrowedBookQueries = require('../queries/borrowedBooks.services');
 async function createBorrowedBook(req, res, next) {
     try {
         const { userId, bookId } = req.body;
-        const borrowedBook = await borrowedBookQueries.createBorrowedBook(parseInt(userId), parseInt(bookId));
+        const returnDate = new Date();
+        returnDate.setDate(returnDate.getDate() + 7);
+        const borrowedBook = await borrowedBookQueries.createBorrowedBook(parseInt(userId), parseInt(bookId), returnDate);
         res.json(borrowedBook);
     } catch (err) {
         next(err);

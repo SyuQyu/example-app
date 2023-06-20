@@ -1,12 +1,12 @@
 const express = require('express');
-const { isAuthenticated } = require('../middleware');
 const { register, login, refreshToken, revokeRefreshToken, logout } = require('../controllers/auth.controller')
+const { isAuthenticated, checkUserLevelAdmin } = require('../middleware');
 const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
-router.post('/refreshToken', refreshToken);
-router.post('/revokeRefreshTokens', revokeRefreshToken);
+router.post('/refreshToken', isAuthenticated, refreshToken);
+router.post('/revokeRefreshTokens', isAuthenticated, checkUserLevelAdmin, revokeRefreshToken);
 router.post('/logout', isAuthenticated, logout);
 
 module.exports = router;
