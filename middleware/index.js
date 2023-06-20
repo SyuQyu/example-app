@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { findUserById } = require('../queries/users.services');
 
 function isAuthenticated(req, res, next) {
     const { authorization } = req.headers;
@@ -22,11 +23,21 @@ function isAuthenticated(req, res, next) {
     }
 
     return next();
-    
+
+}
+
+async function checkUserLevel(req, res, next) {
+    const { userId } = req.payload;
+    const user = await findUserById(userId);
+    if (user.userLevel !== 2) {
+        return res.status(401).send({ message: 'You are not authorized to access this endpoint.' });
+    }
+    next();
 }
 
 
 module.exports = {
-    isAuthenticated
-    
+    isAuthenticated,
+    checkUserLevel
+
 }
